@@ -24,7 +24,7 @@ export default function CategoryBar({ category, setCategory, sort, setSort, resu
           );
         })}
       </div>
-      <div className="flex items-center justify-between gap-2 rounded-2xl border border-[#ecdcbb] bg-white/70 px-3 py-2">
+      <div className="hidden">
         <p className="text-xs font-semibold text-[#8a6d4b]" aria-live="polite">
           ✦ {resultCount} {resultCount === 1 ? "design" : "designs"}
         </p>
