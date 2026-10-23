@@ -16,13 +16,9 @@ export default function ProductCard({ product, onView }) {
       >
         <ProductImage product={product} className="aspect-square w-full transition duration-500 group-hover:scale-105" />
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#3a0812]/35 to-transparent opacity-0 transition group-hover:opacity-100" aria-hidden="true" />
-        {soldOut ? (
+        {soldOut && (
           <span className="absolute left-2 top-2 rounded-full bg-[#2a1a12]/90 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f3e2a9] ring-1 ring-[#c9a24b]/60">
             Sold out
-          </span>
-        ) : (
-          <span className="absolute left-2 top-2 rounded-full bg-gradient-to-r from-[#9a7418] to-[#dcbb55] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#3a0812] shadow">
-            ✦ Bestseller
           </span>
         )}
         <span className="absolute bottom-2 right-2 rounded-full bg-[#3a0812]/80 px-2 py-1 text-[10px] font-bold tracking-wider text-[#f3e2a9] backdrop-blur-sm">
