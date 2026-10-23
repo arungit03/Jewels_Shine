@@ -59,11 +59,11 @@ export default function Hero() {
           </a>
         </div>
         {/* mini stats */}
-        <dl className="animate-fade-up delay-3 mx-auto mt-9 grid max-w-lg grid-cols-3 gap-2">
+        <dl className="hidden" aria-hidden="true">
           {[
-            ["500+", "Happy customers"],
+            ["01", "Easy ordering"],
             ["4.9 ★", "Average rating"],
-            ["Pan-India", "Fast delivery"],
+            ["India", "Delivery available"],
           ].map(([v, l]) => (
             <div key={l} className="rounded-2xl border border-[#c9a24b]/30 bg-white/5 px-2 py-3 backdrop-blur-sm">
               <dt className="sr-only">{l}</dt>
@@ -81,4 +81,3 @@ export default function Hero() {
     </section>
   );
 }
-

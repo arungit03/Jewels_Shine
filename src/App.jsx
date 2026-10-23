@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { CartProvider } from "./context/CartContext.jsx";
 import { db } from "./firebase.js";
 import { toStoreProduct } from "./utils/productData.js";
@@ -21,7 +21,7 @@ import FlyToCart from "./components/FlyToCart.jsx";
 import Footer from "./components/Footer.jsx";
 import AdminPage from "./components/AdminPage.jsx";
 
-function Shop({ products, onAdmin }) {
+function Shop({ products, loading, firebaseError, onAdmin }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("featured");
@@ -44,11 +44,11 @@ function Shop({ products, onAdmin }) {
     else if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
     else if (sort === "newest") list = [...list].sort((a, b) => (b.id > a.id ? 1 : -1));
     return list;
-  }, [search, category, sort]);
+  }, [products, search, category, sort]);
 
   return (
     <div id="top" className="min-h-screen overflow-x-hidden">
-      <Header search={search} setSearch={setSearch} onCartOpen={() => setCartOpen(true)} onAdmin={onAdmin} />
+      <Header search={search} setSearch={setSearch} onCartOpen={() => setCartOpen(true)} />
       <Hero />
       <TrustBar />
       <main id="shop" className="relative scroll-mt-20 overflow-hidden">
@@ -59,6 +59,7 @@ function Shop({ products, onAdmin }) {
             title="Shop jewellery"
             sub="Tap a design for details. Add to cart, then Buy Now to order on WhatsApp."
           />
+          {firebaseError && <div className="mt-5 rounded-2xl border border-[#e7b6a8] bg-[#fff1ec] px-4 py-3 text-sm text-[#842038]" role="alert">{firebaseError}</div>}
           <div className="mt-6">
             <CategoryBar
               category={category}
@@ -69,14 +70,19 @@ function Shop({ products, onAdmin }) {
             />
           </div>
           <div className="mt-5">
-            <ProductGrid products={filtered} onView={setSelected} />
+            <ProductGrid
+              products={filtered}
+              onView={setSelected}
+              loading={loading}
+              onClearFilters={() => { setSearch(""); setCategory("All"); setSort("featured"); }}
+            />
           </div>
         </div>
       </main>
       <HowItWorks />
       <Testimonials />
       <Faq />
-      <Footer />
+      <Footer onAdmin={onAdmin} />
       <WhatsAppButton />
       <FlyToCart />
 
@@ -107,19 +113,29 @@ function Shop({ products, onAdmin }) {
 export default function App() {
   const [products, setProducts] = useState([]);
   const [adminOpen, setAdminOpen] = useState(false);
+  const [loading, setLoading] = useState(Boolean(db));
+  const [firebaseError, setFirebaseError] = useState("");
 
   useEffect(() => {
-    if (!db) return;
-    getDocs(collection(db, "products"))
-      .then((snapshot) => {
-        if (!snapshot.empty) setProducts(snapshot.docs.map((item) => toStoreProduct(item.data())));
-      })
-      .catch(() => {});
+    if (!db) return setLoading(false);
+    const unsubscribe = onSnapshot(
+      collection(db, "products"),
+      (snapshot) => {
+        setProducts(snapshot.docs.map((item) => toStoreProduct({ ...item.data(), id: item.data().id || item.id })));
+        setFirebaseError("");
+        setLoading(false);
+      },
+      () => {
+        setFirebaseError("Products could not be loaded. Please check your Firebase setup.");
+        setLoading(false);
+      },
+    );
+    return unsubscribe;
   }, []);
 
   if (adminOpen) {
     return <AdminPage products={products} onProductsChange={setProducts} onBack={() => setAdminOpen(false)} />;
   }
 
-  return <CartProvider products={products}><Shop products={products} onAdmin={() => setAdminOpen(true)} /></CartProvider>;
+  return <CartProvider products={products}><Shop products={products} loading={loading} firebaseError={firebaseError} onAdmin={() => setAdminOpen(true)} /></CartProvider>;
 }

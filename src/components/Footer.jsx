@@ -1,7 +1,7 @@
 import { CONFIG } from "../config.js";
 import { buildChatUrl } from "../utils/whatsapp.js";
 
-export default function Footer() {
+export default function Footer({ onAdmin }) {
   const year = new Date().getFullYear();
   return (
     <footer className="relative overflow-hidden bg-[#2c050d] text-[#e3cfa5]">
@@ -29,6 +29,7 @@ export default function Footer() {
           💬 Chat on WhatsApp
         </a>
         <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-[#a8845c]">© {year} {CONFIG.SHOP_NAME} · Crafted with love in India</p>
+        <button type="button" onClick={onAdmin} className="mt-3 rounded-full border border-[#c9a24b] px-6 py-2 text-xs font-bold text-[#f3e2a9] transition hover:bg-[#f3e2a9] hover:text-[#3a0812]">Admin</button>
       </div>
     </footer>
   );

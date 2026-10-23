@@ -1,7 +1,7 @@
 import { CONFIG } from "../config.js";
 import { useCart } from "../context/CartContext.jsx";
 
-export default function Header({ search, setSearch, onCartOpen, onAdmin }) {
+export default function Header({ search, setSearch, onCartOpen }) {
   const { count } = useCart();
   return (
     <header className="sticky top-0 z-30">
@@ -55,7 +55,6 @@ export default function Header({ search, setSearch, onCartOpen, onAdmin }) {
               </span>
             )}
           </button>
-          <button type="button" onClick={onAdmin} className="hidden rounded-full border border-[#c9a24b] px-3 py-2 text-xs font-bold text-[#f3e2a9] transition hover:bg-[#f3e2a9] hover:text-[#3a0812] sm:block">Admin</button>
         </div>
       </div>
     </header>

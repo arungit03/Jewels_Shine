@@ -1,6 +1,10 @@
 export function toStoreProduct(product) {
   return {
     ...product,
+    id: String(product.id || "").trim(),
+    name: String(product.name || "Untitled jewellery").trim(),
+    category: String(product.category || "Chains").trim(),
+    price: Number(product.price) || 0,
     images: product.images?.length ? product.images : product.imageUrl ? [product.imageUrl] : [],
     imageUrl: product.imageUrl || product.images?.[0] || "",
   };
@@ -16,4 +20,3 @@ export function toFirestoreProduct(product) {
     imageUrl: product.imageUrl.trim(),
   };
 }
-
