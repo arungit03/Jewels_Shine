@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
 import { CartProvider } from "./context/CartContext.jsx";
-import products from "./data/products.json";
+import { db } from "./firebase.js";
+import { toStoreProduct } from "./utils/productData.js";
 import Header from "./components/Header.jsx";
 import Hero from "./components/Hero.jsx";
 import CategoryBar from "./components/CategoryBar.jsx";
@@ -17,8 +19,9 @@ import Faq from "./components/Faq.jsx";
 import WhatsAppButton from "./components/WhatsAppButton.jsx";
 import FlyToCart from "./components/FlyToCart.jsx";
 import Footer from "./components/Footer.jsx";
+import AdminPage from "./components/AdminPage.jsx";
 
-function Shop() {
+function Shop({ products, onAdmin }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("featured");
@@ -45,7 +48,7 @@ function Shop() {
 
   return (
     <div id="top" className="min-h-screen overflow-x-hidden">
-      <Header search={search} setSearch={setSearch} onCartOpen={() => setCartOpen(true)} />
+      <Header search={search} setSearch={setSearch} onCartOpen={() => setCartOpen(true)} onAdmin={onAdmin} />
       <Hero />
       <TrustBar />
       <main id="shop" className="relative scroll-mt-20 overflow-hidden">
@@ -102,9 +105,21 @@ function Shop() {
 }
 
 export default function App() {
-  return (
-    <CartProvider products={products}>
-      <Shop />
-    </CartProvider>
-  );
+  const [products, setProducts] = useState([]);
+  const [adminOpen, setAdminOpen] = useState(false);
+
+  useEffect(() => {
+    if (!db) return;
+    getDocs(collection(db, "products"))
+      .then((snapshot) => {
+        if (!snapshot.empty) setProducts(snapshot.docs.map((item) => toStoreProduct(item.data())));
+      })
+      .catch(() => {});
+  }, []);
+
+  if (adminOpen) {
+    return <AdminPage products={products} onProductsChange={setProducts} onBack={() => setAdminOpen(false)} />;
+  }
+
+  return <CartProvider products={products}><Shop products={products} onAdmin={() => setAdminOpen(true)} /></CartProvider>;
 }

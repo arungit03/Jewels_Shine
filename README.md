@@ -3,6 +3,14 @@ fon# My Jewels — Online Jewellery Shop
 A fast, mobile-first single-page jewellery store (React + Vite + Tailwind v4).
 Ordering happens over **WhatsApp** — no backend, no payment gateway.
 
+## Firebase catalog and admin
+
+The shop reads products from the Firestore `products` collection. Each document uses `id`, `name`, `price`, `category`, `description`, and `imageUrl`. Images can be uploaded to Cloudinary from the Admin page, and the resulting secure URL is stored in Firestore.
+
+Create a `.env` file from `.env.example` and add the Firebase Web App configuration plus the Cloudinary cloud name and unsigned upload preset. Enable only Firestore in Firebase. Products must be created from the Admin page and saved to Firestore.
+
+The `Admin` button uses a simple frontend password from `src/config.js`; this is intentionally not secure authentication. With this no-auth setup, public write rules are required for the website editor, which means anyone who discovers the Firebase project could modify the catalog. Firebase Storage is not used because it requires the Blaze billing plan for current projects.
+
 ## Run locally
 
 ```bash
@@ -32,26 +40,7 @@ export const CONFIG = {
 
 ## Add products and photos
 
-1. Put photos in `public/images/`, e.g. `public/images/jw-013-1.jpg`.
-2. Add entries in `src/data/products.json` (copy an existing one, extend to 50):
-
-```json
-{
-  "id": "JW-013",
-  "name": "Gold-Plated Temple Necklace",
-  "category": "Necklaces",
-  "price": 1999,
-  "material": "Gold-plated brass",
-  "weight": "70 g",
-  "description": "Short description...",
-  "images": ["/images/jw-013-1.jpg"],
-  "soldOut": false
-}
-```
-
-Categories: `Necklaces | Earrings | Bangles | Rings | Chains | Anklets`.
-If a photo file is missing, a gradient placeholder with a category icon is shown automatically.
-Set `"soldOut": true` to show a Sold out badge and disable Add to cart.
+Open **Admin**, enter the password, select or drop a product image into Cloudinary, complete the product details, and save. The product and Cloudinary image URL are then stored in Firestore.
 
 ## Deploy on Vercel
 
